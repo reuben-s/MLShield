@@ -23,7 +23,8 @@ body, div {
     border-radius: 15px;
     background-color: #FFFFFF;
     height: 600px;
-    width: 800px;
+    width: 898px;
+    border: 1px solid black;
 }
 
 /* Header bar styles */
@@ -48,13 +49,13 @@ body, div {
     position: absolute;
     top: 0;
     right: 0;
-    margin: 3px 8px 0 0;
+    margin: 3px 9px 0 0;
     -webkit-app-region: no-drag;
 }
 
 /* Sidebar styles */
 #side-bar {
-    width: 75px;
+    width: 80px;
     display: flex;
     flex-direction: column; /* Stack child elements vertically */
     gap: 0;
@@ -62,7 +63,7 @@ body, div {
 
 .side-bar-element {
     text-align: center;
-    box-sizing: content-box;
+    box-sizing: border-box;
     border-right: 1px solid black;
     display: flex;
     align-items: center; /* Center content vertically */
@@ -79,7 +80,7 @@ body, div {
 
 /* Active sidebar element styles */
 .active {
-    border-right: 4px solid black;
+    box-sizing: border-box; /* Ensure box-sizing is applied here */
 }
 
 /* Main display container styles */
@@ -92,6 +93,7 @@ body, div {
 #main-content {
     flex-grow: 1;
     padding: 0 40px 0 30px;
+    padding-right: 55px;
     font-family: 'Noto Sans'; /* Apply the custom font */
     font-weight: 500;
 }
