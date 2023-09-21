@@ -4,39 +4,42 @@
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link href="./styles.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <link href="styles/hover.css" rel="stylesheet">
     <title>MLShield</title>
   </head>
   <body>
     
     <div id="main">
+
       <div id="header-bar">
         <div id="window-controls">
-          <img src="assets/svg/circle-minus.svg">
-          <img src="assets/svg/circle-x.svg">
+          <img class="hoverable" src="assets/svg/circle-minus.svg">
+          <img class="hoverable" src="assets/svg/circle-x.svg">
         </div>
       </div>
 
       <div id="main-display">
+
         <div id="side-bar">
 
           <div class="side-bar-element active">
-            <img src="assets/svg/home.svg">
+            <img class="hoverable" src="assets/svg/home.svg">
           </div>
           <div class="side-bar-element space"></div>
 
           <div class="side-bar-element">
-            <img src="assets/svg/pulse.svg">
+            <img class="hoverable" src="assets/svg/pulse.svg">
           </div>
           <div class="side-bar-element space"></div>
 
           <div class="side-bar-element">
-            <img src="assets/svg/settings.svg">
+            <img class="hoverable" src="assets/svg/settings.svg">
           </div>
           <div class="side-bar-element space"></div>
 
           <div class="side-bar-element">
-            <img src="assets/svg/user.svg">
+            <img class="hoverable" src="assets/svg/user.svg">
           </div>
 
         </div>
@@ -44,19 +47,49 @@
         <div id="main-content">
           <span id="title">MLShield</span>
 
-          <div id="banner">
+          <div id="banner" class="hvr-grow-shadow">
             <div id="banner-icon">
               <img src="assets/svg/unlock.svg">
             </div>
             <div id="banner-content">
               <div id="banner-content-center">
                 <span id="banner-text">Malware has been detected on your system</span>
-                <span id="banner-button">Fix Problem</span>
+                <span id="banner-button" class="hvr-grow hoverable">Fix Problem</span>
               </div>
+
             </div>
           </div>
+
+          <div id="message-row">
+
+            <div class="box message-box">
+              <span class="text">Your system is <span class="red">at risk</span></span>
+              <img src="assets/svg/circle-x.svg">
+            </div>
+  
+            <div class="box settings-box hvr-shrink hoverable">
+              <span class="text">Configure settings</span>
+              <img src="assets/svg/settings.svg">
+            </div>
+
+          </div>
+
           
+          <div id="notification-message" class="hvr-grow-shadow">
+
+            <div id="notification-text">
+              <span class="text">Notifications <span class="red">are not</span> enabled</span>
+              <span id="notification-button" class="hvr-buzz-out hoverable">Enable<div class="text"></div><img src="assets/svg/bell-checked.svg"></span>
+            </div>
+
+            <div id="notification-icon">
+              <img src="assets/svg/bell-alert.svg">
+            </div>
+
+          </div>
+
         </div>
+
       </div>
 
     </div>
