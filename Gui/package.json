@@ -1,0 +1,16 @@
+{
+  "name": "mlshield-gui",
+  "productName": "MLShield-Gui",
+  "description": "MLShield-Gui",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "reuben-s",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^25.8.1"
+  }
+}

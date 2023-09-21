@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link href="./styles.css" rel="stylesheet">
+    <title>MLShield</title>
+  </head>
+  <body>
+    
+    <div id="main">
+      <div id="header-bar">
+        <div id="window-controls">
+          <img src="assets/svg/circle-minus.svg">
+          <img src="assets/svg/circle-x.svg">
+        </div>
+      </div>
+
+      <div id="main-display">
+        <div id="side-bar">
+
+          <div class="side-bar-element active">
+            <img src="assets/svg/home.svg">
+          </div>
+          <div class="side-bar-element space"></div>
+
+          <div class="side-bar-element">
+            <img src="assets/svg/pulse.svg">
+          </div>
+          <div class="side-bar-element space"></div>
+
+          <div class="side-bar-element">
+            <img src="assets/svg/settings.svg">
+          </div>
+          <div class="side-bar-element space"></div>
+
+          <div class="side-bar-element">
+            <img src="assets/svg/user.svg">
+          </div>
+
+        </div>
+
+        <div id="main-content">
+          <span id="title">MLShield</span>
+
+          <div id="banner">
+            <div id="banner-icon">
+              <img src="assets/svg/unlock.svg">
+            </div>
+            <div id="banner-content">
+              <div id="banner-content-center">
+                <span id="banner-text">Malware has been detected on your system</span>
+                <span id="banner-button">Fix Problem</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>
