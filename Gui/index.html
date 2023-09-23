@@ -1,91 +1,93 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link href="styles/styles.css" rel="stylesheet">
-    <link href="styles/hover.css" rel="stylesheet">
-    <title>MLShield</title>
-  </head>
-  <body>
-    
-    <div id="main">
 
-      <div id="header-bar">
-        <div id="window-controls">
-          <img class="hoverable" src="assets/svg/circle-minus.svg">
-          <img class="hoverable" src="assets/svg/circle-x.svg">
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <link href="styles/styles.css" rel="stylesheet">
+  <link href="styles/homepage.css" rel="stylesheet">
+  <link href="styles/hover.css" rel="stylesheet">
+  <title>MLShield</title>
+</head>
+
+<body>
+  <div id="main">
+
+    <div id="header-bar">
+      <div id="window-controls">
+        <img class="hoverable" src="assets/svg/circle-minus.svg">
+        <img class="hoverable" src="assets/svg/circle-x.svg">
+      </div>
+    </div>
+
+    <div id="main-display">
+
+      <div id="side-bar">
+
+        <div class="side-bar-element active">
+          <a href="./index.html"><img class="hvr-rotate hoverable" src="assets/svg/home.svg"></a>
         </div>
+        <div class="side-bar-element space"></div>
+
+        <div class="side-bar-element">
+          <a href="./statistics.html"><img class="hvr-rotate hoverable" src="assets/svg/pulse.svg"></a>
+        </div>
+        <div class="side-bar-element space"></div>
+
+        <div class="side-bar-element">
+          <a href="./settings.html"><img class="hvr-rotate hoverable" src="assets/svg/settings.svg"></a>
+        </div>
+        <div class="side-bar-element space"></div>
+
+        <div class="side-bar-element">
+          <a href="./profile.html"><img class="hvr-rotate hoverable" src="assets/svg/user.svg"></a>
+        </div>
+
       </div>
 
-      <div id="main-display">
+      <div id="main-content">
+        <span id="title">MLShield</span>
 
-        <div id="side-bar">
-
-          <div class="side-bar-element active">
-            <img class="hvr-rotate hoverable" src="assets/svg/home.svg">
+        <div id="banner" class="hvr-grow">
+          <div id="banner-icon">
+            <img src="assets/svg/unlock.svg">
           </div>
-          <div class="side-bar-element space"></div>
+          <div id="banner-content">
+            <div id="banner-content-center">
+              <span id="banner-text">Malware has been detected on your system</span>
+              <span id="banner-button" class="hvr-grow hoverable">Fix Problem</span>
+            </div>
 
-          <div class="side-bar-element">
-            <img class="hvr-rotate hoverable" src="assets/svg/pulse.svg">
           </div>
-          <div class="side-bar-element space"></div>
+        </div>
 
-          <div class="side-bar-element">
-            <img class="hvr-rotate hoverable" src="assets/svg/settings.svg">
+        <div id="message-row">
+
+          <div class="box message-box">
+            <span class="text">Your system is <span class="red">at risk</span></span>
+            <img src="assets/svg/circle-x.svg">
           </div>
-          <div class="side-bar-element space"></div>
 
-          <div class="side-bar-element">
-            <img class="hvr-rotate hoverable" src="assets/svg/user.svg">
+          <div class="box settings-box hvr-underline-from-center hvr-grow hoverable">
+            <span class="text">Configure settings</span>
+            <img src="assets/svg/settings.svg">
           </div>
 
         </div>
 
-        <div id="main-content">
-          <span id="title">MLShield</span>
 
-          <div id="banner" class="hvr-grow">
-            <div id="banner-icon">
-              <img src="assets/svg/unlock.svg">
-            </div>
-            <div id="banner-content">
-              <div id="banner-content-center">
-                <span id="banner-text">Malware has been detected on your system</span>
-                <span id="banner-button" class="hvr-grow hoverable">Fix Problem</span>
-              </div>
+        <div id="notification-message" class="hvr-grow">
 
-            </div>
+          <div id="notification-text">
+            <span>Notifications <span class="red">are not</span> enabled</span>
+            <span id="notification-button" class="hvr-buzz-out hoverable">Enable<div class="text"></div><img
+                src="assets/svg/bell-checked.svg"></span>
           </div>
 
-          <div id="message-row">
-
-            <div class="box message-box">
-              <span class="text">Your system is <span class="red">at risk</span></span>
-              <img src="assets/svg/circle-x.svg">
-            </div>
-  
-            <div class="box settings-box hvr-underline-from-center hvr-grow hoverable">
-              <span class="text">Configure settings</span>
-              <img src="assets/svg/settings.svg">
-            </div>
-
-          </div>
-
-          
-          <div id="notification-message" class="hvr-grow">
-
-            <div id="notification-text">
-              <span class="text">Notifications <span class="red">are not</span> enabled</span>
-              <span id="notification-button" class="hvr-buzz-out hoverable">Enable<div class="text"></div><img src="assets/svg/bell-checked.svg"></span>
-            </div>
-
-            <div id="notification-icon">
-              <img src="assets/svg/bell-alert.svg">
-            </div>
-
+          <div id="notification-icon">
+            <img src="assets/svg/bell-alert.svg">
           </div>
 
         </div>
@@ -94,7 +96,10 @@
 
     </div>
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+  </div>
+
+  <!-- You can also require other files to run in this process -->
+  <script src="./scripts/renderer.js"></script>
+</body>
+
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link href="styles/styles.css" rel="stylesheet">
+    <link href="styles/hover.css" rel="stylesheet">
+    <title>MLShield</title>
+</head>
+
+<body>
+    <div id="main">
+
+        <div id="header-bar">
+            <div id="window-controls">
+                <img class="hoverable" src="assets/svg/circle-minus.svg">
+                <img class="hoverable" src="assets/svg/circle-x.svg">
+            </div>
+        </div>
+
+        <div id="main-display">
+
+            <div id="side-bar">
+
+                <div class="side-bar-element active">
+                    <a href="./index.html"><img class="hvr-rotate hoverable" src="assets/svg/home.svg"></a>
+                </div>
+                <div class="side-bar-element space"></div>
+
+                <div class="side-bar-element">
+                    <a href="./statistics.html"><img class="hvr-rotate hoverable" src="assets/svg/pulse.svg"></a>
+                </div>
+                <div class="side-bar-element space"></div>
+
+                <div class="side-bar-element">
+                    <a href="./settings.html"><img class="hvr-rotate hoverable" src="assets/svg/settings.svg"></a>
+                </div>
+                <div class="side-bar-element space"></div>
+
+                <div class="side-bar-element">
+                    <a href="./profile.html"><img class="hvr-rotate hoverable" src="assets/svg/user.svg"></a>
+                </div>
+
+            </div>
+
+            <div id="main-content">
+                <span id="title">MLShield > Settings</span>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./scripts/renderer.js"></script>
+</body>
+
+</html>

@@ -3,11 +3,11 @@
   "productName": "MLShield-Gui",
   "description": "MLShield-Gui",
   "keywords": [],
-  "main": "./main.js",
+  "main": "./scripts/main.js",
   "version": "1.0.0",
   "author": "reuben-s",
   "scripts": {
-    "start": "electron ."
+    "start": "electron ./scripts/main.js"
   },
   "dependencies": {},
   "devDependencies": {
