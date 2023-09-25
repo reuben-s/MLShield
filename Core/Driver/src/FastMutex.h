@@ -1,8 +1,11 @@
+// https://github.com/zodiacon/windowskernelprogrammingbook2e/blob/master/Chapter09/SysMon/FastMutex.h
+
 #pragma once
 
 #include "pch.h"
 
-class FastMutex {
+class FastMutex 
+{
 public:
 	void Init();
 
