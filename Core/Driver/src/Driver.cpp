@@ -5,7 +5,7 @@
 // Prototypes
 
 void Unload(PDRIVER_OBJECT DriverObject);
-DRIVER_DISPATCH ioCreateClose, ioRead, ioWrite, ioDeviceControl;
+DRIVER_DISPATCH ioCreateClose, ioRead, ioDeviceControl;
 
 // DriverEntry
 
@@ -20,7 +20,6 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 	// I/O Handlers
 	DriverObject->MajorFunction[IRP_MJ_CREATE] = DriverObject->MajorFunction[IRP_MJ_CLOSE] = ioCreateClose;
 	DriverObject->MajorFunction[IRP_MJ_READ]   = ioRead;
-	DriverObject->MajorFunction[IRP_MJ_WRITE]  = ioWrite;
 
     // Symbolic link for user mode communication
     UNICODE_STRING devName = RTL_CONSTANT_STRING(L"\\Device\\MLShield");
