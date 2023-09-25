@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "Driver.h"
 
-// Prototypes
-
-void Unload(PDRIVER_OBJECT DriverObject);
-NTSTATUS ioCreateClose(PDEVICE_OBJECT, PIRP Irp);
-NTSTATUS ioRead(PDEVICE_OBJECT, PIRP Irp);
-
-
 // DriverEntry
 
 extern "C" NTSTATUS
@@ -54,6 +47,13 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         }
         symLinkCreated = true;
 
+        status = PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, FALSE);
+        if (!NT_SUCCESS(status)) 
+        {
+            KdPrint((DRIVER_PREFIX "failed to register process callback (0x%08X)\n", status));
+            break;
+        }
+
     } while (false);
 
     // Clean up if there was an error during initialization
@@ -80,7 +80,7 @@ void Unload(PDRIVER_OBJECT DriverObject)
 
 // IRP Handlers 
 
-NTSTATUS CompleteRequest(PIRP Irp, NTSTATUS status = STATUS_SUCCESS, ULONG_PTR info = 0) 
+NTSTATUS CompleteRequest(PIRP Irp, NTSTATUS status, ULONG_PTR info) 
 {
     Irp->IoStatus.Status = status;
     Irp->IoStatus.Information = info;
@@ -91,4 +91,15 @@ NTSTATUS CompleteRequest(PIRP Irp, NTSTATUS status = STATUS_SUCCESS, ULONG_PTR i
 NTSTATUS ioCreateClose(PDEVICE_OBJECT, PIRP Irp) 
 {
     return CompleteRequest(Irp);
+}
+
+// Process event handlers
+
+void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO CreateInfo) {
+    if (CreateInfo) {
+        // process create
+    }
+    else {
+        // process exit
+    }
 }
