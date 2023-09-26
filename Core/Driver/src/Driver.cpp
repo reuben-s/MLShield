@@ -79,6 +79,9 @@ void Unload(PDRIVER_OBJECT DriverObject)
 {
     PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, TRUE); // Delete process create callback
 
+    LIST_ENTRY* entry;
+    while ((entry = dgmObj.RemoveItemFromList()) != nullptr)ExFreePool(CONTAINING_RECORD(entry, NotificationItem<NotificationHeader>, Entry));
+
 	UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\??\\MLShield");
 	IoDeleteSymbolicLink(&symLink);                           // Delete symbolic link
 	IoDeleteDevice(DriverObject->DeviceObject);               // Delete device object
@@ -107,9 +110,49 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO
     if (CreateInfo) 
     {
         // process create
+
+        USHORT allocSize = sizeof(NotificationItem<ProcessCreateInfo>);
+        USHORT commandLineSize = 0;
+        if (CreateInfo->CommandLine)
+        {
+            commandLineSize = CreateInfo->CommandLine->Length;
+            allocSize += commandLineSize + sizeof(WCHAR); // Allocate space for null terminator
+        }
+
+        auto info = (NotificationItem<ProcessCreateInfo>*)ExAllocatePoolWithTag(PagedPool, allocSize, DRIVER_TAG);
+        if (info == nullptr) 
+        {
+            KdPrint((DRIVER_PREFIX "failed allocation\n"));
+            return;
+        }
+
+        auto& item = info->Data;
+        KeQuerySystemTimePrecise(&item.Time);
+        item.Type = NotificationType::ProcessCreate;
+        item.Size = sizeof(ProcessCreateInfo) + commandLineSize + sizeof(WCHAR); // Include space for null terminator
+        item.ProcessId = HandleToULong(ProcessId);
+        item.ParentProcessId = HandleToULong(CreateInfo->ParentProcessId);
+        item.CreatingProcessId = HandleToULong(CreateInfo->CreatingThreadId.UniqueProcess);
+        item.CreatingThreadId = HandleToULong(CreateInfo->CreatingThreadId.UniqueThread);
+
+        if (commandLineSize > 0)
+        {
+            // Copy the command line string into item.CommandLine
+            memcpy(item.CommandLine, CreateInfo->CommandLine->Buffer, commandLineSize);
+
+            // Add the null terminator at the end
+            item.CommandLine[commandLineSize / sizeof(WCHAR)] = L'\0'; // Null-terminate the string
+        }
+        else
+        {
+            item.CommandLine[0] = L'\0'; // Null-terminate an empty string
+        }
+        dgmObj.AddItemToList(&info->Entry);
     }
     else 
     {
+        // process exit
+
 		auto info = (NotificationItem<ProcessExitInfo>*)ExAllocatePool2(POOL_FLAG_PAGED, sizeof(NotificationItem<ProcessExitInfo>), DRIVER_TAG);
 		if (info == nullptr) 
         {
@@ -126,4 +169,42 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO
 
         dgmObj.AddItemToList(&info->Entry);
     }
+}
+
+NTSTATUS ioRead(PDEVICE_OBJECT, PIRP Irp)
+{
+    auto irpSp  = IoGetCurrentIrpStackLocation(Irp);
+    auto len    = irpSp->Parameters.Read.Length;
+    auto status = STATUS_SUCCESS;
+    ULONG bytes = 0;
+    NT_ASSERT(Irp->MdlAddress); // using Direct I/O
+    auto buffer = (PUCHAR)MmGetSystemAddressForMdlSafe(Irp->MdlAddress, NormalPagePriority);
+
+    if (!buffer)
+    {
+        status = STATUS_INSUFFICIENT_RESOURCES;
+    }
+    else 
+    {
+        while (true) 
+        {
+            auto entry = dgmObj.RemoveItemFromList();
+            if (entry == nullptr) break;
+            // get pointer to the actual data item
+            auto info = CONTAINING_RECORD(entry, NotificationItem<NotificationHeader>, Entry);
+            auto size = info->Data.Size;
+            if (len < size) 
+            {
+                // user's buffer too small, insert item back
+                dgmObj.AddItemToHead(entry);
+                break;
+            }
+            memcpy(buffer, &info->Data, size);
+            len    -= size;
+            buffer += size;
+            bytes  += size;
+            ExFreePool(info);
+        }
+    }
+    return CompleteRequest(Irp, status, bytes);
 }
