@@ -14,7 +14,8 @@ void DriverGlobalsManager::Init(ULONG maxCount)
 void DriverGlobalsManager::AddItemToList(LIST_ENTRY* entry)
 {
 	Locker locker(m_LockForManager);
-	if (m_CurrentItemCount == m_MaximumItemCount) {
+	if (m_CurrentItemCount == m_MaximumItemCount) 
+	{
 		auto head = RemoveHeadList(&m_ItemsHead);
 		ExFreePool(CONTAINING_RECORD(head, NotificationItem<NotificationHeader>, Entry));
 		m_CurrentItemCount--;

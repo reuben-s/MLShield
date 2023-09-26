@@ -119,10 +119,10 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO
 
         auto& item = info->Data;
         KeQuerySystemTimePrecise(&item.Time);
-        item.Type = NotificationType::ProcessExit;
+        item.Type      = NotificationType::ProcessExit;
         item.ProcessId = HandleToULong(ProcessId);
-        item.Size = sizeof(ProcessExitInfo);
-        item.ExitCode = PsGetProcessExitStatus(Process);
+        item.Size      = sizeof(ProcessExitInfo);
+        item.ExitCode  = PsGetProcessExitStatus(Process);
 
         dgmObj.AddItemToList(&info->Entry);
     }
