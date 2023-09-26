@@ -2,24 +2,55 @@
 
 #pragma once
 
-#include "pch.h"
-
-enum class EventType : short 
+enum class ItemType : short 
 {
 	None,
 	ProcessCreate,
-	ProcessExit
+	ProcessExit,
+	ThreadCreate,
+	ThreadExit,
+	ImageLoad
 };
 
-struct EventHeader 
+struct ItemHeader 
 {
-	EventType Type;
+	ItemType Type;
 	USHORT Size;
 	LARGE_INTEGER Time;
 };
 
-struct ProcessExitInfo : EventHeader 
+struct ProcessExitInfo : ItemHeader 
 {
 	ULONG ProcessId;
 	ULONG ExitCode;
+};
+
+struct ProcessCreateInfo : ItemHeader {
+	ULONG ProcessId;
+	ULONG ParentProcessId;
+	ULONG CreatingThreadId;
+	ULONG CreatingProcessId;
+	USHORT CommandLineLength;
+	WCHAR CommandLine[1];
+};
+
+struct ThreadCreateInfo : ItemHeader 
+{
+	ULONG ThreadId;
+	ULONG ProcessId;
+};
+
+struct ThreadExitInfo : ThreadCreateInfo 
+{
+	ULONG ExitCode;
+};
+
+const int MaxImageFileSize = 300;
+
+struct ImageLoadInfo : ItemHeader 
+{
+	ULONG ProcessId;
+	ULONG ImageSize;
+	ULONG64 LoadAddress;
+	WCHAR ImageFileName[MaxImageFileSize + 1];
 };

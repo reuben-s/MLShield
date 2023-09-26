@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common.h"
+
 #define DRIVER_PREFIX "MLShield: "
 
 void Unload(PDRIVER_OBJECT DriverObject);

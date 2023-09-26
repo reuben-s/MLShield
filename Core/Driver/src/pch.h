@@ -2,4 +2,6 @@
 
 #pragma once
 
-#include <ntddk.h>
+#include <ntifs.h>
+#include <fltKernel.h>
+#include <dontuse.h>

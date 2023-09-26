@@ -5,7 +5,6 @@
 template<typename TLock>
 struct Locker 
 {
-public:
 	Locker(TLock& lock) : m_Lock(lock) 
 	{
 		lock.Lock();

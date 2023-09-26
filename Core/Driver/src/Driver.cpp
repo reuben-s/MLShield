@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "Driver.h"
+#include "Globals.h"
 
 // DriverEntry
+
+Globals g_state;
 
 extern "C" NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
