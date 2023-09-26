@@ -1,8 +1,6 @@
-// https://github.com/zodiacon/windowskernelprogrammingbook2e/blob/master/Chapter09/SysMon/SysMonPublic.h
-
 #pragma once
 
-enum class ItemType : short 
+enum class NotificationType : short 
 {
 	None,
 	ProcessCreate,
@@ -12,20 +10,21 @@ enum class ItemType : short
 	ImageLoad
 };
 
-struct ItemHeader 
+struct NotificationHeader 
 {
-	ItemType Type;
+	NotificationType Type;
 	USHORT Size;
 	LARGE_INTEGER Time;
 };
 
-struct ProcessExitInfo : ItemHeader 
+struct ProcessExitInfo : NotificationHeader
 {
 	ULONG ProcessId;
 	ULONG ExitCode;
 };
 
-struct ProcessCreateInfo : ItemHeader {
+struct ProcessCreateInfo : NotificationHeader
+{
 	ULONG ProcessId;
 	ULONG ParentProcessId;
 	ULONG CreatingThreadId;
@@ -34,7 +33,7 @@ struct ProcessCreateInfo : ItemHeader {
 	WCHAR CommandLine[1];
 };
 
-struct ThreadCreateInfo : ItemHeader 
+struct ThreadCreateInfo : NotificationHeader
 {
 	ULONG ThreadId;
 	ULONG ProcessId;
@@ -47,7 +46,7 @@ struct ThreadExitInfo : ThreadCreateInfo
 
 const int MaxImageFileSize = 300;
 
-struct ImageLoadInfo : ItemHeader 
+struct ImageLoadInfo : NotificationHeader
 {
 	ULONG ProcessId;
 	ULONG ImageSize;

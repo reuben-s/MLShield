@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "Driver.h"
-#include "Globals.h"
+#include "DriverGlobalsManager.h"
 
 // DriverEntry
 
-Globals g_state;
+DriverGlobalsManager dgmObj;
 
 extern "C" NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
@@ -66,6 +66,8 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         if (DeviceObject) IoDeleteDevice(DeviceObject);     // Delete the device object if created
     }
 
+    dgmObj.Init(); // Init linked list in device global manager
+
 	return status;
 
 }
@@ -75,9 +77,11 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 // Called when driver is unloaded
 void Unload(PDRIVER_OBJECT DriverObject)
 {
+    PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, TRUE); // Delete process create callback
+
 	UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\??\\MLShield");
-	IoDeleteSymbolicLink(&symLink);             // Delete symbolic link
-	IoDeleteDevice(DriverObject->DeviceObject); // Delete device object
+	IoDeleteSymbolicLink(&symLink);                           // Delete symbolic link
+	IoDeleteDevice(DriverObject->DeviceObject);               // Delete device object
 }
 
 
@@ -98,11 +102,28 @@ NTSTATUS ioCreateClose(PDEVICE_OBJECT, PIRP Irp)
 
 // Process event handlers
 
+_Use_decl_annotations_
 void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO CreateInfo) {
-    if (CreateInfo) {
+    if (CreateInfo) 
+    {
         // process create
     }
-    else {
-        // process exit
+    else 
+    {
+		auto info = (NotificationItem<ProcessExitInfo>*)ExAllocatePool2(POOL_FLAG_PAGED, sizeof(NotificationItem<ProcessExitInfo>), DRIVER_TAG);
+		if (info == nullptr) 
+        {
+			KdPrint((DRIVER_PREFIX "failed allocation\n"));
+			return;
+		}
+
+        auto& item = info->Data;
+        KeQuerySystemTimePrecise(&item.Time);
+        item.Type = NotificationType::ProcessExit;
+        item.ProcessId = HandleToULong(ProcessId);
+        item.Size = sizeof(ProcessExitInfo);
+        item.ExitCode = PsGetProcessExitStatus(Process);
+
+        dgmObj.AddItemToList(&info->Entry);
     }
 }

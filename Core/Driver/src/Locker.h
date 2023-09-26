@@ -1,5 +1,3 @@
-// https://github.com/zodiacon/windowskernelprogrammingbook2e/blob/master/Chapter09/SysMon/Locker.h
-
 #pragma once
 
 template<typename TLock>
