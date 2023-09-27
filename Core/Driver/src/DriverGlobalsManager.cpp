@@ -41,3 +41,9 @@ LIST_ENTRY* DriverGlobalsManager::RemoveItemFromList()
 	m_CurrentItemCount--;
 	return item;
 }
+
+bool DriverGlobalsManager::IsListEmpty()
+{
+	if (m_CurrentItemCount == 0) return true;
+	return false;
+}

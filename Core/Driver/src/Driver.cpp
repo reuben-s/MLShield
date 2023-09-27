@@ -147,6 +147,7 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO
         {
             item.CommandLine[0] = L'\0'; // Null-terminate an empty string
         }
+
         dgmObj.AddItemToList(&info->Entry);
     }
     else 
@@ -179,6 +180,9 @@ NTSTATUS ioRead(PDEVICE_OBJECT, PIRP Irp)
     ULONG bytes = 0;
     NT_ASSERT(Irp->MdlAddress); // using Direct I/O
     auto buffer = (PUCHAR)MmGetSystemAddressForMdlSafe(Irp->MdlAddress, NormalPagePriority);
+
+    // User's read operation will block while the notification list is empty.
+    while (dgmObj.IsListEmpty()) continue;
 
     if (!buffer)
     {

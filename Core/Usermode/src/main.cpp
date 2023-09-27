@@ -52,7 +52,6 @@ void DisplayInfo(BYTE* buffer, DWORD size)
 
 int main() {
 	auto hFile = CreateFile(L"\\\\.\\MLShield", GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-
 	if (hFile == INVALID_HANDLE_VALUE) return Error("Failed to open file");
 
 	int size = 1 << 16;	// 64 KB
@@ -61,11 +60,8 @@ int main() {
 	while (true) 
 	{
 		DWORD bytes = 0;
-
 		if (!ReadFile(hFile, buffer.get(), size, &bytes, nullptr)) return Error("Failed to read");
 		if (bytes) DisplayInfo(buffer.get(), bytes);
-
-		Sleep(400);
 	}
 	CloseHandle(hFile);
 	return 0;

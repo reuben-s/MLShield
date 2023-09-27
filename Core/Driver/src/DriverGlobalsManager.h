@@ -9,6 +9,7 @@ struct DriverGlobalsManager
 	void AddItemToList(LIST_ENTRY* entry);
 	void AddItemToHead(LIST_ENTRY* entry);
 	LIST_ENTRY* RemoveItemFromList();
+	bool IsListEmpty();
 
 private:
 	LIST_ENTRY m_ItemsHead;
