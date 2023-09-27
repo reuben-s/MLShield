@@ -23,6 +23,8 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     UNICODE_STRING symLink      = RTL_CONSTANT_STRING(L"\\??\\MLShield");
     PDEVICE_OBJECT DeviceObject = nullptr;
     bool symLinkCreated         = false;
+    bool processCallbacks       = false;
+    bool threadCallbacks        = false;
 
     auto status = STATUS_SUCCESS;
 
@@ -56,12 +58,30 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
             KdPrint((DRIVER_PREFIX "failed to register process callback (0x%08X)\n", status));
             break;
         }
+        processCallbacks = true;
+
+        status = PsSetCreateThreadNotifyRoutine(OnThreadNotify);
+        if (!NT_SUCCESS(status)) 
+        {
+            KdPrint((DRIVER_PREFIX "failed to set thread callback (status=%08X)\n", status));
+            break;
+        }
+        threadCallbacks = true;
+
+        status = PsSetLoadImageNotifyRoutine(OnImageLoadNotify);
+        if (!NT_SUCCESS(status)) 
+        {
+            KdPrint((DRIVER_PREFIX "failed to set image load callback (status=%08X)\n", status));
+            break;
+        }
 
     } while (false);
 
     // Clean up if there was an error during initialization
     if (!NT_SUCCESS(status))
     {
+        if (threadCallbacks) PsRemoveCreateThreadNotifyRoutine(OnThreadNotify);
+        if (processCallbacks) PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, TRUE);
         if (symLinkCreated) IoDeleteSymbolicLink(&symLink); // Delete the symbolic link if created
         if (DeviceObject) IoDeleteDevice(DeviceObject);     // Delete the device object if created
     }
@@ -72,12 +92,14 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 
 }
 
-// Prototype definitions
+// Prototype definitionsNotificationType
 
 // Called when driver is unloaded
 void Unload(PDRIVER_OBJECT DriverObject)
 {
     PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, TRUE); // Delete process create callback
+    PsRemoveCreateThreadNotifyRoutine(OnThreadNotify);
+    PsRemoveLoadImageNotifyRoutine(OnImageLoadNotify);
 
     LIST_ENTRY* entry;
     while ((entry = dgmObj.RemoveItemFromList()) != nullptr)ExFreePool(CONTAINING_RECORD(entry, NotificationItem<NotificationHeader>, Entry));
@@ -103,9 +125,50 @@ NTSTATUS ioCreateClose(PDEVICE_OBJECT, PIRP Irp)
     return CompleteRequest(Irp);
 }
 
-// Process event handlers
+NTSTATUS ioRead(PDEVICE_OBJECT, PIRP Irp)
+{
+    auto irpSp = IoGetCurrentIrpStackLocation(Irp);
+    auto len = irpSp->Parameters.Read.Length;
+    auto status = STATUS_SUCCESS;
+    ULONG bytes = 0;
+    NT_ASSERT(Irp->MdlAddress); // using Direct I/O
+    auto buffer = (PUCHAR)MmGetSystemAddressForMdlSafe(Irp->MdlAddress, NormalPagePriority);
 
-_Use_decl_annotations_
+    // User's read operation will block while the notification list is empty.
+    while (dgmObj.IsListEmpty()) continue;
+
+    if (!buffer)
+    {
+        status = STATUS_INSUFFICIENT_RESOURCES;
+    }
+    else
+    {
+        while (true)
+        {
+            auto entry = dgmObj.RemoveItemFromList();
+            if (entry == nullptr) break;
+            // get pointer to the actual data item
+            auto info = CONTAINING_RECORD(entry, NotificationItem<NotificationHeader>, Entry);
+            auto size = info->Data.Size;
+            if (len < size)
+            {
+                // user's buffer too small, insert item back
+                dgmObj.AddItemToHead(entry);
+                break;
+            }
+            memcpy(buffer, &info->Data, size);
+            len -= size;
+            buffer += size;
+            bytes += size;
+            ExFreePool(info);
+        }
+    }
+    return CompleteRequest(Irp, status, bytes);
+}
+
+
+// Notification handlers
+
 void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO CreateInfo) {
     if (CreateInfo) 
     {
@@ -172,43 +235,72 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE_NOTIFY_INFO
     }
 }
 
-NTSTATUS ioRead(PDEVICE_OBJECT, PIRP Irp)
+void OnThreadNotify(HANDLE ProcessId, HANDLE ThreadId, BOOLEAN Create) 
 {
-    auto irpSp  = IoGetCurrentIrpStackLocation(Irp);
-    auto len    = irpSp->Parameters.Read.Length;
-    auto status = STATUS_SUCCESS;
-    ULONG bytes = 0;
-    NT_ASSERT(Irp->MdlAddress); // using Direct I/O
-    auto buffer = (PUCHAR)MmGetSystemAddressForMdlSafe(Irp->MdlAddress, NormalPagePriority);
-
-    // User's read operation will block while the notification list is empty.
-    while (dgmObj.IsListEmpty()) continue;
-
-    if (!buffer)
+    auto size = Create ? sizeof(NotificationItem<ThreadCreateInfo>) : sizeof(NotificationItem<ThreadExitInfo>);
+    auto info = (NotificationItem<ThreadExitInfo>*)ExAllocatePool2(POOL_FLAG_PAGED, size, DRIVER_TAG);
+    if (info == nullptr) 
     {
-        status = STATUS_INSUFFICIENT_RESOURCES;
+        KdPrint((DRIVER_PREFIX "Failed to allocate memory\n"));
+        return;
     }
-    else 
+    auto& item = info->Data;
+    KeQuerySystemTimePrecise(&item.Time);
+    item.Size = Create ? sizeof(ThreadCreateInfo) : sizeof(ThreadExitInfo);
+    item.Type = Create ? NotificationType::ThreadCreate : NotificationType::ThreadExit;
+    item.ProcessId = HandleToULong(ProcessId);
+    item.ThreadId = HandleToULong(ThreadId);
+    if (!Create) 
     {
-        while (true) 
+        PETHREAD thread;
+        if (NT_SUCCESS(PsLookupThreadByThreadId(ThreadId, &thread))) 
         {
-            auto entry = dgmObj.RemoveItemFromList();
-            if (entry == nullptr) break;
-            // get pointer to the actual data item
-            auto info = CONTAINING_RECORD(entry, NotificationItem<NotificationHeader>, Entry);
-            auto size = info->Data.Size;
-            if (len < size) 
-            {
-                // user's buffer too small, insert item back
-                dgmObj.AddItemToHead(entry);
-                break;
-            }
-            memcpy(buffer, &info->Data, size);
-            len    -= size;
-            buffer += size;
-            bytes  += size;
-            ExFreePool(info);
+            item.ExitCode = PsGetThreadExitStatus(thread);
+            ObDereferenceObject(thread);
         }
     }
-    return CompleteRequest(Irp, status, bytes);
+    dgmObj.AddItemToList(&info->Entry);
+}
+
+void OnImageLoadNotify(PUNICODE_STRING FullImageName, HANDLE ProcessId, PIMAGE_INFO ImageInfo)
+{
+    if (ProcessId == nullptr) 
+    {
+        // system image, ignore
+        return;
+    }
+
+    auto size = sizeof(NotificationItem<ImageLoadInfo>);
+    auto info = (NotificationItem<ImageLoadInfo>*)ExAllocatePool2(POOL_FLAG_PAGED, size, DRIVER_TAG);
+    if (info == nullptr) 
+    {
+        KdPrint((DRIVER_PREFIX "Failed to allocate memory\n"));
+        return;
+    }
+
+    auto& item = info->Data;
+    KeQuerySystemTimePrecise(&item.Time);
+    item.Size = sizeof(item);
+    item.Type = NotificationType::ImageLoad;
+    item.ProcessId = HandleToULong(ProcessId);
+    item.ImageSize = (ULONG)ImageInfo->ImageSize;
+    item.LoadAddress = (ULONG64)ImageInfo->ImageBase;
+    item.ImageFileName[0] = 0;
+
+    if (ImageInfo->ExtendedInfoPresent) 
+    {
+        auto exinfo = CONTAINING_RECORD(ImageInfo, IMAGE_INFO_EX, ImageInfo);
+        PFLT_FILE_NAME_INFORMATION nameInfo;
+        if (NT_SUCCESS(FltGetFileNameInformationUnsafe(exinfo->FileObject, nullptr, FLT_FILE_NAME_NORMALIZED | FLT_FILE_NAME_QUERY_DEFAULT, &nameInfo))) 
+        {
+            wcscpy_s(item.ImageFileName, nameInfo->Name.Buffer);
+            FltReleaseFileNameInformation(nameInfo);
+        }
+    }
+    if (item.ImageFileName[0] == 0 && FullImageName) 
+    {
+        wcscpy_s(item.ImageFileName, FullImageName->Buffer);
+    }
+
+    dgmObj.AddItemToList(&info->Entry);
 }
