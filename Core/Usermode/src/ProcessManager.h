@@ -11,5 +11,5 @@ public:
 
 
 private:
-	std::unordered_map<ULONG, std::shared_ptr<Process>> m_Processes;
+	std::unordered_map<ULONG, std::unique_ptr<Process>> m_Processes;
 };

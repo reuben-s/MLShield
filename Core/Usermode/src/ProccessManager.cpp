@@ -2,6 +2,5 @@
 
 void ProcessManager::ProcessCreate(ULONG pid)
 {
-	std::shared_ptr<Process> newProcess = std::make_shared<Process>(pid);
-	m_Processes.insert({ pid, newProcess });
+	m_Processes.insert({ pid, std::make_unique<Process>(pid) });
 }

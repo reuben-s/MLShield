@@ -8,4 +8,5 @@ public:
 	int id;
 
 	Process(ULONG pid);
+	void AttatchDebugger();
 };
