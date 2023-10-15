@@ -141,13 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\DLLManager.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\ProccessManager.cpp" />
-    <ClCompile Include="src\Process.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Process.h" />
-    <ClInclude Include="src\ProcessManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
