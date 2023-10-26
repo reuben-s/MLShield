@@ -13,14 +13,14 @@ BOOL Pipe::InitPipe()
 	while (true)
 	{
 		this->hPipe = CreateFile(
-			this->lpszPipename,
-			GENERIC_READ |
+			this->lpszPipename,   // pipe name 
+			GENERIC_READ |        // read and write access 
 			GENERIC_WRITE,
-			0,
-			NULL,
-			OPEN_EXISTING,
-			0,
-			NULL
+			0,					  // no sharing 
+			NULL,                 // default security attributes
+			OPEN_EXISTING,        // opens existing pipe 
+			0,                    // default attributes 
+			NULL			      // no template file
 		);
 
 		if (hPipe != INVALID_HANDLE_VALUE)
@@ -44,9 +44,9 @@ BOOL Pipe::InitPipe()
 	DWORD dwMode = PIPE_READMODE_MESSAGE;
 	BOOL fSuccess = SetNamedPipeHandleState(
 		this->hPipe,    // pipe handle 
-		&dwMode,  // new pipe mode 
-		NULL,     // don't set maximum bytes 
-		NULL      // don't set maximum time
+		&dwMode,		// new pipe mode 
+		NULL,			// don't set maximum bytes 
+		NULL			// don't set maximum time
 	);
 	if (!fSuccess)
 	{
