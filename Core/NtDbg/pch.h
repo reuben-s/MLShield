@@ -3,6 +3,6 @@
 
 #include <winsock2.h>
 #include <Windows.h>
-#include "MinHook.h"
+// #include "MinHook.h"
 
 #endif //PCH_H

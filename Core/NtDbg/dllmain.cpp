@@ -2,10 +2,8 @@
 #include "NamedPipe.h"
 #include "HookManager.h"
 
-#define LP_TEXT_STRING(s) ((LPTSTR)TEXT(s))
-
-Pipe* pServer; // pointer to pipe object on the heap
-HookManager* pHookManager;
+Pipe* pPipe; // Pointer to pipe object on the heap
+HookManager* pHookManager; // Pointer to HookManager object on heap
 const LPTSTR lpszPipename = LP_TEXT_STRING("\\\\.\\pipe\\TestPipe");
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
@@ -15,38 +13,34 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     case DLL_PROCESS_ATTACH:
         // Perform initialization tasks when the DLL is loaded
         // Create a named pipe client
-        pServer = new Pipe(lpszPipename);
-        if (!pServer->bPipeOpen)
+        pPipe = new Pipe(lpszPipename);
+        if (pPipe == nullptr)
+        {
+            // Failed to create pipe object
+            return FALSE;
+        }
+        if (pPipe->bPipeOpen == FALSE)
         {
             // Pipe connection failed to open so delete the object from the heap and exit DllMain.
-            delete pServer;
+            delete pPipe;
             return FALSE;
         }
-        // Initialise function hooks.
-        pHookManager = new HookManager();
-        if (!pHookManager->HooksActive)
-        {
-            // Failed to inisialize hooks so delete hook manager and server object then exit DllMain.
-            delete pHookManager;
-            pServer->SendMessage(LP_TEXT_STRING("Failed to initialise hooks."));
-            delete pServer;
-            return FALSE;
-        }
-        // Otherwise notify the pipe server that the hooks were initalized.
-        pServer->SendMessage(LP_TEXT_STRING("Successfully initialised hooks."));
-
+        pPipe->SendMessage(LP_TEXT_STRING("New client connected."));
+       
+        pHookManager = new HookManager(pPipe);
 
         break;
 
     case DLL_PROCESS_DETACH:
         // Perform cleanup tasks when the DLL is unloaded
-        if (pServer) {
-            delete pServer;
+        if (pPipe != nullptr) {
+            delete pPipe;
         }
-        if (pHookManager)
+        if (pHookManager != nullptr)
         {
             delete pHookManager;
         }
+
         break;
 
     case DLL_THREAD_ATTACH:

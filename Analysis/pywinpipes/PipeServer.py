@@ -53,9 +53,6 @@ class PipeServer:
 
     def _init_server(self):
         while (True):
-            for client in self._clients:
-                print(client.pid)
-
             self._pipe = CreateNamedPipe(
                 self._pipe_name,
                 self._access_mode,

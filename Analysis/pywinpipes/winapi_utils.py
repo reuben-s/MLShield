@@ -68,7 +68,6 @@ def ReadFromNamedPipe(pipe):
 def GetClientPID(pipe):
     PID = DWORD(0)
     success = GetNamedPipeClientProcessId(pipe, byref(PID))
-    print(PID, success)
     if success:
         return PID.value
     return False

@@ -2,6 +2,10 @@
 
 #include "pch.h"
 
+#include <iostream>
+
+#define LP_TEXT_STRING(s) ((LPTSTR)TEXT(s)) // Formats a string literal so that it can be sent to the pipe server.
+
 class Pipe
 {
 public:

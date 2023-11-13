@@ -1,15 +1,15 @@
 #pragma once
 
 #include "pch.h"
-#include "hook_util.h"
+#include "NamedPipe.h"
+#include "detours/detours.h"
 
 class HookManager
 {
 public:
-	BOOL HooksActive;
-
-	HookManager();
+	HookManager(Pipe* pPipe);
 	~HookManager();
-private:
-	ACCEPT fpAccept = NULL;
 };
+
+extern HookManager* pHookManager;
+extern Pipe* pPipe;

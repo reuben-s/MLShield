@@ -1,23 +1,32 @@
 #include "pch.h"
 #include "HookManager.h"
 
-HookManager::HookManager()
+static int (WINAPI* pMessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) = MessageBoxA;
+
+int WINAPI MessageBoxA_Detour(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
-	this->HooksActive = FALSE;
+    pPipe->SendMessage(LP_TEXT_STRING("MessageBoxA Called"));
+    return pMessageBoxA(hWnd, lpText, lpCaption, uType);
+}
 
-	if (MH_Initialize() != MH_OK)
-	{
-		return;
-	}
+HookManager::HookManager(Pipe* pPipe)
+{
+    DetourRestoreAfterWith();
 
-	// Start creating hooks if initialisation successfull.
-	MH_CreateHook(static_cast<ACCEPT>(&accept), &detour_accept, reinterpret_cast<LPVOID*>(&this->fpAccept));
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourAttach(&(PVOID&)pMessageBoxA, MessageBoxA_Detour);
+    DetourTransactionCommit();
 
-	MH_EnableHook(MH_ALL_HOOKS);
+    pPipe->SendMessage(LP_TEXT_STRING("Detours hooks initalised."));
 }
 
 HookManager::~HookManager()
 {
-	if (this->fpAccept != NULL) MH_DisableHook(static_cast<ACCEPT>(&accept));
-	MH_Uninitialize();
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourDetach(&(PVOID&)pMessageBoxA, MessageBoxA_Detour);
+    DetourTransactionCommit();
+
+    delete pHookManager;
 }

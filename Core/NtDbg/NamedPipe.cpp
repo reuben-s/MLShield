@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "NamedPipe.h"
-#include <iostream>
 
 Pipe::Pipe(LPTSTR lpszPipename)
 {
