@@ -6,4 +6,4 @@ A toy behaviour-based antivirus. I developed this as an example of an implementa
 > This project is intended purely as a proof of concept and for educational purposes. It is not designed to replace or provide comprehensive antivirus protection for your computer systems.
 
 ### Dependencies
-- [MinHook](https://github.com/TsudaKageyu/minhook)
+- [Detours](https://github.com/microsoft/Detours)
