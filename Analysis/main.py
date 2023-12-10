@@ -38,7 +38,7 @@ class InterfaceManager:
         details_frame = tk.LabelFrame(root, text="Pipe server details")
         details_frame.grid(row=2, column=1)
 
-        server_status = tk.Label(details_frame, text="Server status: Connected")
+        server_status = tk.Label(details_frame, text="Server status: Waiting for new connection ...")
         server_status.grid(row=0, column=0, padx=5, sticky="w")
 
         no_connected_clients = tk.Label(details_frame, text="Number of connected clients: ")

@@ -161,6 +161,7 @@
     <ClInclude Include="HookManager.h" />
     <ClInclude Include="NamedPipe.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="WinApiFunctionPointers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

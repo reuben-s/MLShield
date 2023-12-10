@@ -1,12 +1,11 @@
 #include "pch.h"
 #include "HookManager.h"
-
-static int (WINAPI* pMessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) = MessageBoxA;
+#include "WinApiFunctionPointers.h"
 
 int WINAPI MessageBoxA_Detour(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
     pPipe->SendMessage(LP_TEXT_STRING("MessageBoxA Called"));
-    return pMessageBoxA(hWnd, lpText, lpCaption, uType);
+    return WinApiFunctionPointers::pMessageBoxA(hWnd, lpText, lpCaption, uType);
 }
 
 HookManager::HookManager(Pipe* pPipe)
@@ -15,7 +14,7 @@ HookManager::HookManager(Pipe* pPipe)
 
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&(PVOID&)pMessageBoxA, MessageBoxA_Detour);
+    DetourAttach(&(PVOID&)WinApiFunctionPointers::pMessageBoxA, MessageBoxA_Detour);
     DetourTransactionCommit();
 
     pPipe->SendMessage(LP_TEXT_STRING("Detours hooks initalised."));
@@ -25,7 +24,7 @@ HookManager::~HookManager()
 {
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
-    DetourDetach(&(PVOID&)pMessageBoxA, MessageBoxA_Detour);
+    DetourDetach(&(PVOID&)WinApiFunctionPointers::pMessageBoxA, MessageBoxA_Detour);
     DetourTransactionCommit();
 
     delete pHookManager;

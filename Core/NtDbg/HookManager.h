@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "NamedPipe.h"
-#include "detours/detours.h"
 
 class HookManager
 {

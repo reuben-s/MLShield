@@ -4,7 +4,7 @@
 
 Pipe* pPipe; // Pointer to pipe object on the heap
 HookManager* pHookManager; // Pointer to HookManager object on heap
-const LPTSTR lpszPipename = LP_TEXT_STRING("\\\\.\\pipe\\TestPipe");
+constexpr LPTSTR lpszPipename = LP_TEXT_STRING("\\\\.\\pipe\\TestPipe");
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
