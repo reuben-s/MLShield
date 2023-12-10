@@ -13,6 +13,9 @@
 #include <psapi.h>
 #include <winnls.h>
 #include <sysinfoapi.h>
+#include <urlmon.h>
+#include <LMat.h>
+#include <LMShare.h>
 #include <Windows.h>
 #include "detours/detours.h"
 
@@ -20,6 +23,7 @@
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "Secur32.lib")
 #pragma comment(lib, "Iphlpapi.lib")
-
+#pragma comment(lib, "urlmon.lib")
+#pragma comment(lib, "Netapi32.lib")
 
 #endif //PCH_H
