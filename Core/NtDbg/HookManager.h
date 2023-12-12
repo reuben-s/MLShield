@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "NamedPipe.h"
+#include "WinApiDetouredFunctions.h"
 
 class HookManager
 {
@@ -11,4 +12,3 @@ public:
 };
 
 extern HookManager* pHookManager;
-extern Pipe* pPipe;

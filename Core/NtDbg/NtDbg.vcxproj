@@ -161,6 +161,7 @@
     <ClInclude Include="HookManager.h" />
     <ClInclude Include="NamedPipe.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="WinApiDetouredFunctions.h" />
     <ClInclude Include="WinApiFunctionPointers.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="WinApiDetouredFunctions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
