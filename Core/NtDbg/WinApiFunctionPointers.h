@@ -37,10 +37,10 @@ namespace HookUtil
             ) = AttachThreadInput;
 
         // bind
-        static BOOL(WINAPI* pBind)(
-            SOCKET              s,
-            const sockaddr* addr,
-            int                 namelen
+        static int(WSAAPI* pBind)(
+            SOCKET s,
+            const  sockaddr* addr,
+            int    namelen
             ) = bind;
 
         // BitBlt

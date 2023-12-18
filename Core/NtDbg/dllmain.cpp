@@ -13,6 +13,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     case DLL_PROCESS_ATTACH:
         // Perform initialization tasks when the DLL is loaded
         // Create a named pipe client
+        AllocConsole();
+        FILE* pConsole;
+        freopen_s(&pConsole, "CONOUT$", "w", stdout);
+
         pPipe = new Pipe(lpszPipename);
         if (pPipe == nullptr)
         {

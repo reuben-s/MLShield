@@ -17,6 +17,8 @@
 #include <LMat.h>
 #include <LMShare.h>
 #include <Windows.h>
+#define WIN32_NO_STATUS
+#define DETOURS_INTERNAL
 #include "detours/detours.h"
 
 #pragma comment(lib, "Crypt32.lib")

@@ -11,7 +11,7 @@ namespace HookUtil
 		SOCKET WSAAPI accept_Detour(SOCKET s, sockaddr* addr, int* addrlen);
 		BOOL WINAPI AdjustTokenPrivileges_Detour(HANDLE TokenHandle, BOOL DisableAllPrivileges, PTOKEN_PRIVILEGES NewState, DWORD BufferLength, PTOKEN_PRIVILEGES PreviousState, PDWORD ReturnLength);
 		BOOL WINAPI AttachThreadInput_Detour(DWORD idAttach, DWORD idAttachTo, BOOL fAttach);
-		BOOL WINAPI bind_Detour(SOCKET s, const sockaddr* addr, int namelen);
+		int WSAAPI bind_Detour(SOCKET s, const sockaddr* addr, int namelen);
 		BOOL WINAPI BitBlt_Detour(HDC hdc, int x, int y, int cx, int cy, HDC hdcSrc, int x1, int y1, DWORD rop);
 		HCERTSTORE WINAPI CertOpenSystemStoreA_Detour(HCRYPTPROV_LEGACY hProv, LPCSTR szSubsystemProtocol);
 		HCERTSTORE WINAPI CertOpenSystemStoreW_Detour(HCRYPTPROV_LEGACY hProv, LPCWSTR szSubsystemProtocol);
@@ -36,7 +36,7 @@ namespace HookUtil
 		SHORT WINAPI GetAsyncKeyState_Detour(_In_ int vKey);
 		HDC WINAPI GetDC_Detour(_In_opt_ HWND hWnd);
 		HWND WINAPI GetForegroundWindow_Detour();
-		struct hostent* WSAAPI gethostbyname_Detour(_In_ const char* name);
+		//struct hostent* WSAAPI gethostbyname_Detour(_In_ const char* name);
 		int WINAPI gethostname_Detour(_Out_ char* name, _In_ int namelen);
 		SHORT WINAPI GetKeyState_Detour(_In_ int nVirtKey);
 		DWORD WINAPI GetModuleFileName_Detour(_In_opt_ HMODULE hModule, _Out_ LPWSTR lpFilename, _In_ DWORD nSize);

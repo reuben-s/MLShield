@@ -29,7 +29,7 @@ namespace HookUtil
             return HookUtil::FunctionPointers::pAttachThreadInput(idAttach, idAttachTo, fAttach);
         }
 
-        BOOL WINAPI bind_Detour(SOCKET s, const sockaddr* addr, int namelen)
+        int WSAAPI bind_Detour(SOCKET s, const sockaddr* addr, int namelen)
         {
             pPipe->SendMessage(LP_TEXT_STRING("bind Called"));
             return HookUtil::FunctionPointers::pBind(s, addr, namelen);
@@ -40,7 +40,7 @@ namespace HookUtil
             pPipe->SendMessage(LP_TEXT_STRING("BitBlt Called"));
             return HookUtil::FunctionPointers::pBitBlt(hdc, x, y, cx, cy, hdcSrc, x1, y1, rop);
         }
-
+        
         HCERTSTORE WINAPI CertOpenSystemStoreA_Detour(HCRYPTPROV_LEGACY hProv, LPCSTR szSubsystemProtocol)
         {
             pPipe->SendMessage(LP_TEXT_STRING("CertOpenSystemStoreA Called"));
@@ -514,7 +514,5 @@ namespace HookUtil
             pPipe->SendMessage(LP_TEXT_STRING("WSAStartup Called"));
             return HookUtil::FunctionPointers::pWSAStartup(wVersionRequested, lpWSAData);
         }
-
-
 	}
 }
