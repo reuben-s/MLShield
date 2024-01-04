@@ -24,12 +24,6 @@
     <ClInclude Include="HookManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinApiFunctionPointers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WinApiDetouredFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -42,9 +36,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HookManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WinApiDetouredFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
